@@ -12,10 +12,32 @@ export function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // For demo purposes, just navigate to dashboard
-    navigate('/dashboard');
+
+    try {
+      const response = await fetch('http://localhost:5000/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email, // Քո սերվերը սպասում է email
+          pass: password // Քո սերվերը սպասում է pass
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Հաջող մուտք. պահիր թոքենը localStorage-ում
+        localStorage.setItem('token', data.token);
+        navigate('/dashboard');
+      } else {
+        alert(data.error || "Login failed");
+      }
+    } catch (err) {
+      console.error("Connection error:", err);
+      alert("Cannot connect to server");
+    }
   };
 
   return (

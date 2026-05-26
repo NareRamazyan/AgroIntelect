@@ -17,10 +17,37 @@ export function Register() {
     confirmPassword: '',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // For demo purposes, just navigate to dashboard
-    navigate('/dashboard');
+    
+    // Ստուգիր՝ գաղտնաբառերը համընկնում են
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          login: formData.name, // Քո սերվերը սպասում է 'login'
+          email: formData.email,
+          pass: formData.password, // Քո սերվերը սպասում է 'pass'
+          name: formData.name,
+          phone: formData.location // Կամ քո ուզած դաշտը
+        }),
+      });
+
+      if (response.ok) {
+        navigate('/login');
+      } else {
+        const errorData = await response.json();
+        alert(errorData.error || "Registration failed");
+      }
+    } catch (err) {
+      console.error("Connection error:", err);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
