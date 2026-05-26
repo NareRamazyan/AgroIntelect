@@ -1,0 +1,10 @@
+
+node_modules/
+venv/
+.venv/
+
+
+dist/
+build/
+.env
+.DS_Store
