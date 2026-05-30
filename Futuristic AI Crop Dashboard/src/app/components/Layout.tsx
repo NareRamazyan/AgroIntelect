@@ -1,11 +1,10 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router';
 import { motion } from 'motion/react';
-import { LayoutDashboard, BarChart3, History, Leaf, LogOut } from 'lucide-react';
+import { LayoutDashboard, BarChart3, Leaf, LogOut } from 'lucide-react';
 
 const navItems = [
   { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/dashboard/analysis', label: 'Analysis', icon: BarChart3 },
-  { path: '/dashboard/history', label: 'History', icon: History },
 ];
 
 export function Layout() {
