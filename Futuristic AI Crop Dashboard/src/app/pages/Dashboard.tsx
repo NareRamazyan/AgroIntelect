@@ -11,7 +11,6 @@ interface SensorData {
   temperature: number;
   humidity: number;
   ph: number;
-  rainfall: number;
   crop: string;
   confidence: number;
 }

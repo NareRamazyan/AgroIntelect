@@ -15,7 +15,6 @@ interface SensorData {
   temperature: number;
   humidity: number;
   ph: number;
-  rainfall: number;
   crop: string;
   confidence: number;
   alternatives: { crop: string; confidence: number }[];
@@ -23,7 +22,6 @@ interface SensorData {
 
 interface MonthlyData {
   month:    string;
-  rainfall: number;
   temp:     number;
   yield:    number;
 }
@@ -36,7 +34,6 @@ interface TimelineData {
   temperature: number;
   humidity:    number;
   ph:          number;
-  rainfall:    number;
 }
 
 const OPTIMAL = { N: 100, P: 80, K: 60, ph: 7.0 };
@@ -70,7 +67,6 @@ export function Analysis() {
       setSensor(sensorData);
       setMonthlyData(monthlyRaw.map((r: any) => ({
         month:    r.month,
-        rainfall: parseFloat(r.rainfall),
         temp:     parseFloat(r.temp),
         yield:    parseFloat(r.yield),
       })));
@@ -203,7 +199,6 @@ export function Analysis() {
       { key: 'N',           label: 'Nitrogen',    color: '#10b981' },
       { key: 'P',           label: 'Phosphorus',  color: '#ec4899' },
       { key: 'K',           label: 'Potassium',   color: '#f97316' },
-      { key: 'rainfall',    label: 'Rainfall',    color: '#06b6d4' },
     ].map((p) => (
       <button
         key={p.key}
@@ -230,7 +225,6 @@ export function Analysis() {
       N:           { label: 'Nitrogen',    color: '#10b981', idealMin: 40,  idealMax: 120, unit: 'mg/kg' },
       P:           { label: 'Phosphorus',  color: '#ec4899', idealMin: 20,  idealMax: 100, unit: 'mg/kg' },
       K:           { label: 'Potassium',   color: '#f97316', idealMin: 15,  idealMax: 80,  unit: 'mg/kg' },
-      rainfall:    { label: 'Rainfall',    color: '#06b6d4', idealMin: 50,  idealMax: 250, unit: 'mm'    },
     };
     const cfg = paramConfig[activeParam];
 
@@ -357,15 +351,7 @@ export function Analysis() {
                 warning: 'pH is slightly acidic or alkaline — some nutrients may be limited.',
                 danger: 'Extreme pH detected — most nutrients will be unavailable.',
               },
-              {
-                label: 'Rainfall',
-                value: sensor.rainfall,
-                unit: 'mm',
-                min: 50,  max: 250,
-                good: 'Rainfall is sufficient for healthy crop growth.',
-                warning: 'Rainfall is slightly outside ideal range.',
-                danger: 'Rainfall too low (drought risk) or too high (flooding risk).',
-              },
+              
             ];
 
             const getStatus = (value: number, min: number, max: number) => {

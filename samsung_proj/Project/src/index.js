@@ -52,8 +52,8 @@ app.get('/api/sensor-data', async (req, res) => {
       N:           parseFloat(row.N),
       P:           parseFloat(row.P),
       K:           parseFloat(row.K),
-      temperature: parseFloat(row.temperature),
-      humidity:    parseFloat(row.humidity),
+      temperature: parseFloat(row.humidity),
+      humidity:    parseFloat(row.temperature),
       ph:          parseFloat(row.ph),
       rainfall:    parseFloat(row.rainfall),
     };
@@ -111,10 +111,10 @@ app.get('/api/history/timeline', async (req, res) => {
   try {
     const repo = AppDataSource.getRepository('SensorHistory');
     const rows = await repo.find({
-      order: { recordedAt: 'ASC' },
+      order: { recordedAt: 'DESC' },
       take:  50,
     });
-    res.json(rows.map(r => ({
+    res.json(rows.reverse().map(r => ({
       time:        new Date(r.recordedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       N:           r.N,
       P:           r.P,

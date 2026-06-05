@@ -7,10 +7,9 @@ interface CropVisualizationProps {
   temperature: number;
   humidity: number;
   ph: number;
-  rainfall: number;
 }
 
-export function CropVisualization({ nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall }: CropVisualizationProps) {
+export function CropVisualization({ nitrogen, phosphorus, potassium, temperature, humidity, ph }: CropVisualizationProps) {
   const data = [
     { parameter: 'Nitrogen', value: nitrogen, fullMark: 140 },
     { parameter: 'Phosphorus', value: phosphorus, fullMark: 145 },
@@ -18,7 +17,6 @@ export function CropVisualization({ nitrogen, phosphorus, potassium, temperature
     { parameter: 'Temperature', value: temperature, fullMark: 50 },
     { parameter: 'Humidity', value: humidity, fullMark: 100 },
     { parameter: 'pH', value: ph, fullMark: 14 },
-    { parameter: 'Rainfall', value: rainfall, fullMark: 300 },
   ];
 
   return (
