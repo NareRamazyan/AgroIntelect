@@ -25,8 +25,17 @@ rainfall    = float(input_data['rainfall'])
 
 data = np.array([[N, P, K, temperature, humidity, ph, rainfall]])
 
-crop       = model.predict(data)[0]
 proba      = model.predict_proba(data)[0]
-confidence = round(float(np.max(proba)) * 100)
+classes    = model.classes_
+top5_idx   = proba.argsort()[::-1][:5]
 
-print(json.dumps({ "crop": crop, "confidence": confidence }))
+top5 = [
+    {"crop": classes[i], "confidence": round(float(proba[i]) * 100)}
+    for i in top5_idx
+]
+
+print(json.dumps({
+    "crop":        top5[0]["crop"],
+    "confidence":  top5[0]["confidence"],
+    "alternatives": top5[1:]   # 4 alternatives
+}))

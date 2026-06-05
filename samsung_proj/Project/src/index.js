@@ -41,25 +41,95 @@ app.get('/api/sensor-data', async (req, res) => {
   try {
     const csvPath = path.resolve(process.env.CSV_PATH_SENSOR || './data/sensor_data.csv');
     const content = fs.readFileSync(csvPath, 'utf-8');
-    const rows = parse(content, { columns: true, trim: true });
-    if (!rows.length) return res.status(404).json({ error: 'No data found' });
+    const rows    = parse(content, { columns: true, trim: true });
+
+    if (!rows.length) {
+      return res.status(404).json({ error: 'No sensor data found' });
+    }
 
     const row = rows[0];
     const params = {
-      N: parseFloat(row.N), 
-      P: parseFloat(row.P), 
-      K: parseFloat(row.K),
-      temperature: parseFloat(row.temperature), 
-      humidity: parseFloat(row.humidity),
-      ph: parseFloat(row.ph), 
-      rainfall: parseFloat(row.rainfall),
+      N:           parseFloat(row.N),
+      P:           parseFloat(row.P),
+      K:           parseFloat(row.K),
+      temperature: parseFloat(row.temperature),
+      humidity:    parseFloat(row.humidity),
+      ph:          parseFloat(row.ph),
+      rainfall:    parseFloat(row.rainfall),
     };
+
     const prediction = await predict(params);
-    res.json({ ...params, ...prediction });
+    const result = { ...params, ...prediction };
+
+    // ── Auto-save to sensor_history table ────────────────────────────────────
+    try {
+      const repo   = AppDataSource.getRepository('SensorHistory');
+      const record = repo.create({
+        N:           params.N,
+        P:           params.P,
+        K:           params.K,
+        temperature: params.temperature,
+        humidity:    params.humidity,
+        ph:          params.ph,
+        rainfall:    params.rainfall,
+        crop:        prediction.crop,
+        confidence:  prediction.confidence,
+      });
+      await repo.save(record);
+    } catch (dbErr) {
+      console.warn('Could not save to history:', dbErr.message);
+    }
+
+    res.json(result);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
+// GET /api/history/monthly — aggregated monthly data from real sensor readings
+app.get('/api/history/monthly', async (req, res) => {
+  try {
+    const repo = AppDataSource.getRepository('SensorHistory');
+    const rows = await repo.query(`
+      SELECT
+        TO_CHAR("recordedAt", 'Mon') AS month,
+        EXTRACT(MONTH FROM "recordedAt") AS month_num,
+        ROUND(AVG(humidity)::numeric, 1)    AS rainfall,
+        ROUND(AVG(temperature)::numeric, 1) AS temp,
+        ROUND(AVG(confidence)::numeric, 1)  AS yield
+      FROM sensor_history
+      GROUP BY TO_CHAR("recordedAt", 'Mon'), EXTRACT(MONTH FROM "recordedAt")
+      ORDER BY month_num ASC
+    `);
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/history/timeline', async (req, res) => {
+  try {
+    const repo = AppDataSource.getRepository('SensorHistory');
+    const rows = await repo.find({
+      order: { recordedAt: 'ASC' },
+      take:  50,
+    });
+    res.json(rows.map(r => ({
+      time:        new Date(r.recordedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      N:           r.N,
+      P:           r.P,
+      K:           r.K,
+      temperature: r.temperature,
+      humidity:    r.humidity,
+      ph:          r.ph,
+      rainfall:    r.rainfall,
+    })));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 
 // --- Բազայի միացում և սերվերի գործարկում ---
 AppDataSource.initialize()

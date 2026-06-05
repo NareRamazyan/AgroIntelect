@@ -56,7 +56,6 @@ export function Dashboard() {
     { label: 'Temperature',     value: data.temperature, unit: '°C'    },
     { label: 'Humidity',        value: data.humidity,    unit: '%'     },
     { label: 'pH Level',        value: data.ph,          unit: ''      },
-    { label: 'Rainfall',        value: data.rainfall,    unit: 'mm'    },
   ] : [];
 
   return (
@@ -73,7 +72,7 @@ export function Dashboard() {
           <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-lg h-full">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-emerald-600" />
+                {/* <TrendingUp className="w-5 h-5 text-emerald-600" /> */}
                 <h2 className="text-xl font-bold text-gray-900">Sensor Readings</h2>
               </div>
               <button
@@ -174,9 +173,9 @@ export function Dashboard() {
                   </h2>
                 </motion.div>
 
-                <p className="text-gray-700 text-sm max-w-md">
+                {/* <p className="text-gray-700 text-sm max-w-md">
                   Based on live soil sensor readings, predicted by your trained Random Forest model.
-                </p>
+                </p> */}
               </div>
 
               <div className="flex items-center justify-center">
@@ -220,7 +219,7 @@ export function Dashboard() {
               whileTap={{ scale: 0.98 }}
             >
               <span className="flex items-center justify-center gap-2">
-                <Sparkles className="w-5 h-5" />
+                {/* <Sparkles className="w-5 h-5" /> */}
                 {isLoading ? 'Reading Sensor…' : 'Refresh Sensor Data'}
               </span>
             </motion.button>

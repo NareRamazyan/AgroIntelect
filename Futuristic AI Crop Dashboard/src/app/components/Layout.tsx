@@ -30,7 +30,7 @@ export function Layout() {
                 <Leaf className="w-8 h-8 text-emerald-600" />
               </motion.div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Agro Intellect AI</h1>
+                <h1 className="text-2xl font-bold text-gray-900">AgroIntellect</h1>
                 <p className="text-xs text-gray-600">Smart Crop Management</p>
               </div>
             </Link>
